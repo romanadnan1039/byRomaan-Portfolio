@@ -888,7 +888,7 @@
             const [isEditorOpen, setIsEditorOpen] = useState(false);
             const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
             const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-            const [activeSection, setActiveSection] = useState('home');
+            const [showAdminButton, setShowAdminButton] = useState(false);
             const [toast, setToast] = useState(null);
             const [cmsData, setCmsData] = useState(INITIAL_STATE);
 
@@ -898,7 +898,11 @@
             };
 
                 useEffect(() => {
-                    // Lucide initialization is handled by the Icon component's internal state
+                    // Secret Admin Mode check
+                    const urlParams = new URLSearchParams(window.location.search);
+                    if (urlParams.get('admin') === 'true') {
+                        setShowAdminButton(true);
+                    }
                 }, []);
 
                 useEffect(() => {
@@ -1298,17 +1302,19 @@
                         <Icon name="message-circle" size={18} /> WhatsApp
                     </a>
 
-                    {/* ADMIN TRIGGER & SIDEBAR MENU */}
-                    <div className="admin-controls">
-                        <button className="admin-trigger" onClick={() => setIsAdminMenuOpen(!isAdminMenuOpen)}>
-                            <Icon name="more-vertical" size={20} />
-                        </button>
-                        <div className={`admin-sidebar ${isAdminMenuOpen ? 'active' : ''}`}>
-                            <button className="cms-btn-sidebar" onClick={() => { setIsEditorOpen(true); setIsAdminMenuOpen(false); }}>
-                                <Icon name="edit-3" size={14} /> EDIT CMS
+                    {/* ADMIN TRIGGER & SIDEBAR MENU - Only visible in Secret Mode */}
+                    {showAdminButton && (
+                        <div className="admin-controls">
+                            <button className="admin-trigger" onClick={() => setIsAdminMenuOpen(!isAdminMenuOpen)}>
+                                <Icon name="more-vertical" size={20} />
                             </button>
+                            <div className={`admin-sidebar ${isAdminMenuOpen ? 'active' : ''}`}>
+                                <button className="cms-btn-sidebar" onClick={() => { setIsEditorOpen(true); setIsAdminMenuOpen(false); }}>
+                                    <Icon name="edit-3" size={14} /> EDIT CMS
+                                </button>
+                            </div>
                         </div>
-                    </div>
+                    )}
 
                     {/* CMS SIDEBAR - INTEGRATED STYLING FROM USER'S REQUEST */}
                     <div className={`fixed inset-y-0 right-0 w-full md:w-[500px] glass z-[4000] p-12 overflow-y-auto border-l border-white/10 cms-sidebar ${isEditorOpen ? 'open' : ''}`} style={{background: 'rgba(10,10,13,0.95)', backdropFilter: 'blur(30px)'}}>
