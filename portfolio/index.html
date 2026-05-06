@@ -52,6 +52,7 @@
             font-family: var(--body); font-size: 16px; line-height: 1.6;
             overflow-x: hidden; cursor: none;
         }
+        @media (pointer: coarse) { body { cursor: auto; } .cursor, .cursor-ring { display: none !important; } }
 
         /* CUSTOM CURSOR */
         .cursor {
@@ -75,10 +76,12 @@
         /* NAV */
         nav {
             position: fixed; top: 0; left: 0; right: 0; z-index: 500;
-            padding: 24px 60px; display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 40px; display: flex; justify-content: space-between; align-items: center;
             background: linear-gradient(to bottom, rgba(5,5,7,0.9) 0%, transparent 100%);
             backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.02);
+            transition: padding 0.3s ease;
         }
+        @media (max-width: 768px) { nav { padding: 16px 20px; } }
         .nav-logo { font-family: var(--display); font-size: 28px; letter-spacing: 0.05em; color: var(--white); text-decoration: none; }
         .nav-logo span { color: var(--orange); }
         .nav-links { display: flex; gap: 40px; list-style: none; }
@@ -457,11 +460,12 @@
             border-radius: 24px;
             overflow: hidden;
             display: flex;
-            height: 340px;
+            min-height: 340px;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
             box-shadow: 0 10px 30px rgba(0,0,0,0.4), 0 0 20px rgba(255, 94, 0, 0.05);
         }
+        @media (max-width: 768px) { .unified-card { flex-direction: column; height: auto; } }
         .unified-card:hover { 
             transform: translateY(-8px); 
             border-color: var(--orange); 
@@ -473,6 +477,7 @@
             position: relative;
             padding: 16px;
         }
+        @media (max-width: 768px) { .card-media { flex: 0 0 auto; width: 100%; aspect-ratio: 16/9; } }
         .media-inner {
             width: 100%; height: 100%;
             background: #050507; border-radius: 16px;
@@ -654,12 +659,16 @@
         .reveal.visible { opacity: 1; transform: translateY(0); }
 
         @media (max-width: 900px) {
-            nav { padding: 16px 24px; } .nav-links { display: none; }
-            #home, section { padding: 80px 24px; }
+            nav { padding: 16px 24px; } 
+            .nav-links { display: none !important; }
+            #mobile-menu-toggle { display: flex !important; }
+            #home, section { padding: 80px 20px; }
             .hero-layout, .about-grid, .system-grid, .work-grid, .testi-grid, .pricing-grid { grid-template-columns: 1fr; }
-            .hero-title { font-size: clamp(56px, 15vw, 100px); }
+            .hero-title { font-size: clamp(48px, 12vw, 80px); }
             .cms-sidebar { width: 100%; }
-            .premium-card-wrapper { transform: translateY(0); }
+            .premium-card-wrapper { display: none; }
+            .hero-layout { gap: 40px; }
+            .nav-cta { display: none; }
         }
     </style>
 </head>
@@ -868,6 +877,7 @@
         const PortfolioApp = () => {
             const [isEditorOpen, setIsEditorOpen] = useState(false);
             const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
+            const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
             const [activeSection, setActiveSection] = useState('home');
             const [toast, setToast] = useState(null);
             const [cmsData, setCmsData] = useState(INITIAL_STATE);
@@ -1007,7 +1017,9 @@
                         </div>
                     )}
                     <nav>
-                        <a href="#home" className="nav-logo">BY<span>ROMAAN</span></a>
+                        <a href="#home" className="nav-logo" onClick={() => setIsMobileMenuOpen(false)}>BY<span>ROMAAN</span></a>
+                        
+                        {/* Desktop Links */}
                         <ul className="nav-links">
                             <li><a href="#home">Home</a></li>
                             <li><a href="#about">About</a></li>
@@ -1015,7 +1027,28 @@
                             <li><a href="#work">Work</a></li>
                             <li><a href="#testimonials">Results</a></li>
                         </ul>
+
+                        {/* Mobile Menu Button */}
+                        <button className="md:hidden text-white bg-transparent border-none cursor-pointer flex items-center justify-center" 
+                                style={{ display: 'none' }} // We'll use CSS to show this
+                                id="mobile-menu-toggle"
+                                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+                            <Icon name={isMobileMenuOpen ? "x" : "menu"} size={28} />
+                        </button>
+
                         <a href={cmsData.social.calendly} className="btn-premium nav-cta" target="_blank" rel="noreferrer">Book Call</a>
+
+                        {/* Mobile Overlay Menu */}
+                        {isMobileMenuOpen && (
+                            <div className="fixed inset-0 bg-black/95 z-[600] flex flex-col items-center justify-center gap-8 md:hidden">
+                                <a href="#home" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-bebas tracking-widest text-white no-underline">Home</a>
+                                <a href="#about" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-bebas tracking-widest text-white no-underline">About</a>
+                                <a href="#system" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-bebas tracking-widest text-white no-underline">System</a>
+                                <a href="#work" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-bebas tracking-widest text-white no-underline">Work</a>
+                                <a href="#testimonials" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-bebas tracking-widest text-white no-underline">Results</a>
+                                <a href={cmsData.social.calendly} onClick={() => setIsMobileMenuOpen(false)} className="btn-premium text-lg px-12" target="_blank" rel="noreferrer">Book Strategy Call</a>
+                            </div>
+                        )}
                     </nav>
 
                     <section id="home">
