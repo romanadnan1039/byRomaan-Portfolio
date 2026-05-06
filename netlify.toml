@@ -1,7 +1,3 @@
-plugins = []
-headers = []
-redirects = []
-
 [dev]
 command = "npm run dev"
 targetPort = 3000
