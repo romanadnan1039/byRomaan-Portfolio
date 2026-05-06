@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>byRomaan — Premium AI Revenue Systems & Video Production</title>
+    
+    <!-- FONTS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- CORE LIBS -->
+    <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            corePlugins: { preflight: false },
+            theme: {
+                extend: {
+                    colors: { accent: '#ff5e00', bg: '#000', bg2: '#0a0a0a', bg3: '#111111', card: 'rgba(15, 15, 15, 0.95)' },
+                    fontFamily: { bebas: ['Bebas Neue', 'cursive'], sans: ['Inter', 'sans-serif'], mono: ['DM Mono', 'monospace'] }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --orange: #f56e1a;
+            --black: #000000;
+            --dark: #050505;
+            --card: #0a0a0a;
+            --bg: #000000;
+            --white: #ffffff;
+            --light: #d1d1d6;
+            --muted: #86868b;
+            --border: rgba(255, 255, 255, 0.05);
+            --mono: 'JetBrains Mono', monospace;
+            --display: 'Bebas Neue', sans-serif;
+            --body: 'Barlow', sans-serif;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--black); color: var(--white);
+            font-family: var(--body); font-size: 16px; line-height: 1.6;
+            overflow-x: hidden; cursor: none;
+        }
+
+        /* CUSTOM CURSOR */
+        .cursor {
+            width: 12px; height: 12px; background: var(--orange); border-radius: 50%;
+            position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999;
+            transition: transform 0.1s, width 0.2s, height 0.2s; mix-blend-mode: difference;
+        }
+        .cursor-ring {
+            width: 36px; height: 36px; border: 1px solid rgba(255,94,0,0.3); border-radius: 50%;
+            position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9998;
+            transition: transform 0.15s ease-out, width 0.2s, height 0.2s;
+        }
+
+        /* NOISE */
+        body::before {
+            content: ''; position: fixed; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.025'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: 1000;
+        }
+
+        /* NAV */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+            padding: 24px 60px; display: flex; justify-content: space-between; align-items: center;
+            background: linear-gradient(to bottom, rgba(5,5,7,0.9) 0%, transparent 100%);
+            backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.02);
+        }
+        .nav-logo { font-family: var(--display); font-size: 28px; letter-spacing: 0.05em; color: var(--white); text-decoration: none; }
+        .nav-logo span { color: var(--orange); }
+        .nav-links { display: flex; gap: 40px; list-style: none; }
+        .nav-links a {
+            font-family: var(--mono); font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
+            color: var(--light); text-decoration: none; position: relative; padding: 4px 0; transition: color 0.3s ease;
+        }
+        .nav-links a::after {
+            content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 1px; background: var(--orange);
+            transform: scaleX(0); transform-origin: right; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 0 8px rgba(255,94,0,0.5);
+        }
+        .nav-links a:hover { color: var(--white); text-shadow: 0 0 10px rgba(255,255,255,0.1); }
+        .nav-links a:hover::after { transform: scaleX(1); transform-origin: left; }
+
+        /* BUTTON SYSTEM (PREMIUM GLOW) */
+        .btn-premium {
+            background: var(--orange);
+            color: var(--black) !important;
+            padding: 16px 36px;
+            font-family: var(--mono); font-size: 12px; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase;
+            display: inline-flex; align-items: center; justify-content: center; gap: 12px; text-decoration: none;
+            border-radius: 4px; border: none; cursor: none; position: relative;
+            box-shadow: 0 10px 20px rgba(245, 110, 26, 0.15);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 10; pointer-events: auto;
+        }
+        .btn-premium:hover {
+            transform: scale(1.02) translateY(-2px);
+            box-shadow: 0 15px 35px rgba(245, 110, 26, 0.25);
+        }
+        .btn-premium:active { transform: scale(0.98); box-shadow: 0 2px 5px rgba(255, 94, 0, 0.1); transition: all 0.1s; }
+
+        .btn-social {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--light);
+            padding: 14px 24px;
+            font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none;
+            border-radius: 8px; cursor: none; backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            pointer-events: auto; z-index: 10;
+        }
+        .btn-social:hover {
+            background: rgba(255, 94, 0, 0.05);
+            border-color: rgba(255, 94, 0, 0.4);
+            color: var(--white);
+            transform: scale(1.03) translateY(-2px);
+            box-shadow: 0 0 10px rgba(255, 94, 0, 0.1), 0 0 20px rgba(255, 94, 0, 0.1);
+        }
+        .btn-social:active { transform: scale(0.97); transition: all 0.1s; }
+
+        .nav-cta { padding: 12px 28px; font-size: 11px; }
+
+        /* WHATSAPP FLOAT - RESTORED */
+        .wa-float {
+            position: fixed; bottom: 32px; right: 32px; z-index: 400;
+            background: #25d366; color: white !important; padding: 12px 24px;
+            font-family: var(--mono); font-size: 11px; font-weight: 700;
+            text-transform: uppercase; text-decoration: none;
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+            box-shadow: 0 10px 30px rgba(37,211,102,0.15);
+            border-radius: 50px; transition: all 0.3s ease; cursor: none;
+        }
+        .wa-float:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(37,211,102,0.25); }
+        .wa-float:active { transform: scale(0.97); }
+
+        /* HERO LAYOUT */
+        #home { min-height: 100vh; display: flex; align-items: center; padding: 140px 60px 80px; position: relative; overflow: hidden; }
+        .hero-layout { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 80px; align-items: flex-start; width: 100%; max-width: 1400px; margin: 0 auto; z-index: 10; }
+        @media (max-width: 1024px) { .hero-layout { grid-template-columns: 1fr; text-align: left; } .premium-card-wrapper { display: none; } }
+
+        .hero-glow {
+            position: absolute; top: -150px; left: -150px; width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(255,94,0,0.06) 0%, transparent 60%); pointer-events: none;
+        }
+
+        .hero-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--orange); margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
+        .hero-tag::before { content: ''; display: block; width: 40px; height: 1px; background: var(--orange); }
+        .hero-title { font-family: var(--display); font-size: clamp(64px, 7vw, 120px); line-height: 0.9; letter-spacing: 0.02em; margin-bottom: 16px; }
+        .hero-title .orange { color: var(--orange); }
+        .hero-title .stroke { -webkit-text-stroke: 1px rgba(240,240,245,0.2); color: transparent; }
+        .hero-sub { font-family: var(--display); font-size: clamp(20px, 2.5vw, 32px); letter-spacing: 0.15em; color: var(--orange); font-style: italic; margin-bottom: 24px; }
+        .hero-title .pure-white { 
+            color: var(--white);
+            text-shadow: none;
+            letter-spacing: 0.02em;
+        }
+
+        /* ADVANCED 3D BRAND CARD (FULL COVER & CONTINUOUS ANIMATION & UPWARD ALIGNMENT) */
+        .premium-card-wrapper {
+            perspective: 1500px; width: 100%; max-width: 400px; margin-left: auto;
+            transform: translateY(10px);
+        }
+        .premium-card {
+            width: 100%; aspect-ratio: 1;
+            background: linear-gradient(145deg, rgba(30, 30, 35, 0.4), rgba(10, 10, 15, 0.8));
+            border: 1px solid rgba(255, 94, 0, 0.3);
+            border-radius: 40px;
+            padding: 0; 
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 15px rgba(255, 94, 0, 0.1);
+            transform-style: preserve-3d;
+            animation: elegant-float 8s infinite alternate ease-in-out;
+            position: relative; 
+            overflow: hidden; 
+            transition: box-shadow 0.4s ease, border-color 0.4s ease;
+        }
+        
+        @keyframes elegant-float {
+            0% { transform: rotateX(8deg) rotateY(-8deg) translateY(0px); }
+            50% { transform: rotateX(-4deg) rotateY(10deg) translateY(-15px); }
+            100% { transform: rotateX(6deg) rotateY(-6deg) translateY(0px); }
+        }
+
+        /* CARD HOVER EFFECT - PREMIUM SHEEN & GLOW */
+        .premium-card::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 40%, rgba(255,94,0,0.15) 100%);
+            opacity: 0; transition: opacity 0.5s ease; pointer-events: none; z-index: 2; border-radius: inherit;
+        }
+        .premium-card::after {
+            content: '';
+            position: absolute; top: -150%; left: -150%; width: 300%; height: 300%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.05), transparent);
+            transform: rotate(45deg);
+            pointer-events: none; z-index: 3; transition: transform 0.5s ease;
+        }
+
+        .premium-card:hover {
+            box-shadow: 0 30px 60px rgba(0,0,0,0.7), 0 0 50px rgba(255,94,0,0.15), inset 0 1px 0 rgba(255,255,255,0.2);
+            border-color: rgba(255,94,0,0.3);
+        }
+        .premium-card:hover::before { opacity: 1; }
+        .premium-card:hover::after { animation: shine-sweep 1.5s ease-in-out; }
+
+        @keyframes shine-sweep {
+            0% { transform: translate(-100%, -100%) rotate(45deg); }
+            100% { transform: translate(100%, 100%) rotate(45deg); }
+        }
+
+        .premium-card-content {
+            transform: translateZ(20px); 
+            width: 100%; height: 100%;
+            border-radius: inherit; 
+            overflow: hidden; z-index: 1;
+        }
+        .premium-card-logo {
+            width: 100%; height: 100%;
+            object-fit: cover; 
+            display: block;
+        }
+
+        /* PERSISTENT GLOWS FOR MISSED CARDS */
+        .premium-card {
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 25px rgba(255, 94, 0, 0.15) !important;
+            border-color: rgba(255, 94, 0, 0.4) !important;
+        }
+        .about-photo-wrap {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 25px rgba(255, 94, 0, 0.15) !important;
+            border-color: rgba(255, 94, 0, 0.4) !important;
+        }
+
+        /* OFFER SECTION STYLES */
+        .offer-section {
+            background: linear-gradient(180deg, var(--black) 0%, rgba(245, 110, 26, 0.05) 50%, var(--black) 100%);
+            padding: 140px 60px;
+            text-align: center;
+        }
+        .offer-card {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(15, 15, 15, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 94, 0, 0.2);
+            border-radius: 32px;
+            padding: 80px 40px;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.5), 0 0 40px rgba(245, 110, 26, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        .offer-card::before {
+            content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+            width: 60%; height: 2px; background: linear-gradient(90deg, transparent, var(--orange), transparent);
+            box-shadow: 0 0 20px var(--orange);
+        }
+        .offer-headline {
+            font-family: var(--display);
+            font-size: clamp(40px, 5vw, 72px);
+            line-height: 1;
+            margin-bottom: 40px;
+            color: var(--white);
+        }
+        .offer-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+            text-align: left;
+            margin-bottom: 60px;
+        }
+        .offer-item {
+            display: flex;
+            gap: 16px;
+        }
+        .offer-item-icon {
+            color: var(--orange);
+            filter: drop-shadow(0 0 8px rgba(255, 94, 0, 0.4));
+        }
+        .offer-item-text h4 {
+            font-family: var(--display);
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: var(--white);
+            letter-spacing: 0.02em;
+        }
+        .offer-item-text p {
+            font-size: 14px;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+        .offer-outcome {
+            background: rgba(255, 94, 0, 0.03);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 48px;
+            border: 1px dashed rgba(255, 94, 0, 0.2);
+        }
+        .offer-outcome h5 {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--orange);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: 16px;
+        }
+        .offer-outcome-list {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+        .outcome-stat {
+            font-family: var(--display);
+            font-size: 32px;
+            color: var(--white);
+        }
+        .outcome-stat span { color: var(--orange); }
+
+        @media (max-width: 768px) {
+            .offer-grid { grid-template-columns: 1fr; }
+            .offer-card { padding: 40px 20px; }
+            .offer-section { padding: 80px 20px; }
+        }
+
+        /* TICKER */
+        .ticker-wrap { background: var(--card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 16px 0; overflow: hidden; position: relative; }
+        .ticker-track { display: flex; gap: 0; animation: ticker 30s linear infinite; white-space: nowrap; }
+        .ticker-item { font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; color: var(--light); text-transform: uppercase; padding: 0 40px; display: flex; align-items: center; gap: 20px; }
+        .ticker-item::after { content: '◆'; font-size: 8px; color: var(--orange); }
+        @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+        /* SECTIONS & TYPOGRAPHY */
+        section { padding: 120px 60px; border-bottom: 1px solid var(--border); }
+        .section-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--orange); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+        .section-tag::before { content: ''; display: block; width: 24px; height: 1px; background: var(--orange); }
+        .section-title { font-family: var(--display); font-size: clamp(48px, 6vw, 88px); line-height: 0.95; letter-spacing: 0.02em; margin-bottom: 56px; font-weight: 800; color: var(--white); }
+        .section-title .orange { 
+            color: var(--orange); 
+            text-shadow: 0 4px 20px rgba(245, 110, 26, 0.15);
+        }
+        
+        .upwork-review-card {
+            background: #0a0a0a;
+            border: 1px solid rgba(255, 94, 0, 0.2);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3), 0 0 15px rgba(255, 94, 0, 0.05);
+            animation: float-drift 6s infinite ease-in-out;
+        }
+        @keyframes float-drift {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .upwork-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #14a800; /* Upwork Green */
+            font-family: var(--mono);
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        /* PREMIUM COMPONENTS (DEPTH & SHADOWS) */
+        .system-card, .pricing-card {
+            background: #0a0a0a;
+            border: 1px solid rgba(255, 94, 0, 0.2);
+            border-radius: 16px; 
+            box-shadow: 0 4px 30px rgba(0,0,0,0.5), 0 0 15px rgba(255, 94, 0, 0.05);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative; overflow: hidden;
+        }
+        .system-card:hover, .pricing-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--orange);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(255, 94, 0, 0.15);
+        }
+
+        /* ABOUT */
+        #about .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+        .about-photo-wrap { position: relative; border-radius: 12px; display: inline-block; overflow: hidden; width: 100%; aspect-ratio: 16/9; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        .about-photo-wrap:hover { transform: translateY(-10px) scale(1.02); border-color: var(--orange); box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 30px rgba(255,94,0,0.3), 0 0 60px rgba(255,94,0,0.1); }
+        .about-photo { width: 100%; height: 100%; object-fit: contain; background: #000; border-radius: 12px; display: block; transition: transform 0.3s ease; }
+        .about-badge {
+            position: absolute; top: -12px; right: -12px;
+            background: var(--orange); color: var(--black); padding: 10px 16px;
+            font-family: var(--display); font-size: 16px; letter-spacing: 0.05em; line-height: 1.2;
+            text-decoration: none; cursor: none; transition: transform 0.3s ease;
+            z-index: 10; border-radius: 4px; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3), 0 0 15px rgba(255,94,0,0.3);
+            animation: badge-shimmer 3s infinite;
+        }
+        @keyframes badge-shimmer {
+            0% { box-shadow: 0 10px 20px rgba(0,0,0,0.3), 0 0 15px rgba(255,94,0,0.3); }
+            50% { box-shadow: 0 10px 20px rgba(0,0,0,0.3), 0 0 25px rgba(255,94,0,0.5); transform: scale(1.02); }
+            100% { box-shadow: 0 10px 20px rgba(0,0,0,0.3), 0 0 15px rgba(255,94,0,0.3); }
+        }
+        .about-badge:hover { transform: scale(1.05); }
+        .about-desc { font-size: 17px; font-weight: 400; color: var(--light); line-height: 1.7; margin-bottom: 36px; }
+        .skills-list { display: flex; flex-direction: column; }
+        .skill-row { display: flex; align-items: center; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--border); transition: transform 0.3s ease; }
+        .skill-row:hover { transform: translateX(10px); }
+        .skill-dot { width: 6px; height: 6px; background: var(--orange); border-radius: 50%; }
+
+        /* GLASS CARD UTILITY */
+        .glass-card {
+            background: rgba(15, 15, 15, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 94, 0, 0.2);
+            border-radius: 32px;
+            padding: 60px 40px;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.5), 0 0 40px rgba(245, 110, 26, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        .glass-card::before {
+            content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+            width: 60%; height: 2px; background: linear-gradient(90deg, transparent, var(--orange), transparent);
+            box-shadow: 0 0 20px var(--orange);
+        }
+
+        /* SERVICES */
+        .system-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        .system-card { padding: 40px 32px; }
+        .system-icon { 
+            margin-bottom: 24px; 
+            color: var(--orange);
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            filter: drop-shadow(0 0 10px rgba(255, 94, 0, 0.3));
+        }
+        .system-title { font-family: var(--display); font-size: 28px; letter-spacing: 0.04em; margin-bottom: 12px; font-weight: 700; }
+        .system-desc { font-size: 15px; color: var(--light); line-height: 1.6; margin-bottom: 24px; }
+        .system-result { font-family: var(--mono); font-size: 12px; color: var(--orange); letter-spacing: 0.05em; font-weight: 500; }
+
+        /* WORK & TESTIMONIALS */
+        .work-grid, .testi-grid { display: grid; grid-template-columns: 1fr; gap: 32px; }
+        .unified-card {
+            background: #0a0a0a;
+            border: 1px solid rgba(255, 94, 0, 0.2);
+            border-radius: 24px;
+            overflow: hidden;
+            display: flex;
+            height: 340px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4), 0 0 20px rgba(255, 94, 0, 0.05);
+        }
+        .unified-card:hover { 
+            transform: translateY(-8px); 
+            border-color: var(--orange); 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8), 0 0 30px rgba(255, 94, 0, 0.15); 
+        }
+        
+        .card-media {
+            flex: 0 0 45%;
+            position: relative;
+            padding: 16px;
+        }
+        .media-inner {
+            width: 100%; height: 100%;
+            background: #050507; border-radius: 16px;
+            overflow: hidden; position: relative;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .media-inner video, .media-inner img { width: 100%; height: 100%; object-fit: contain; }
+        
+        .card-content {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .card-title { font-family: var(--display); font-size: 36px; line-height: 1.1; color: var(--white); font-weight: 800; margin-bottom: 12px; }
+        .card-desc { font-size: 14px; color: var(--light); line-height: 1.6; max-width: 400px; }
+        .card-btn {
+            background: var(--white);
+            color: var(--black);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-family: var(--mono);
+            font-size: 11px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            width: fit-content;
+            transition: all 0.2s;
+        }
+        .card-btn:hover { background: var(--orange); }
+
+        .verified-badge-premium {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--white);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+            align-self: flex-start;
+        }
+        .verified-badge-premium::after {
+            content: '';
+            position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            animation: shine-badge 3s infinite;
+        }
+        @keyframes shine-badge {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            20% { transform: translateX(100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        /* PREMIUM VIDEO CONTROLS */
+        .video-container { position: relative; width: 100%; height: 100%; overflow: hidden; }
+        .video-overlay {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.3);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.3s ease; z-index: 10;
+            pointer-events: none;
+        }
+        .video-container:hover .video-overlay { opacity: 1; pointer-events: all; }
+        .play-btn-large {
+            width: 80px; height: 80px; background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: white; cursor: pointer; transition: all 0.3s ease;
+            transform: scale(0.9);
+        }
+        .play-btn-large:hover { transform: scale(1); background: var(--orange); color: black; border-color: var(--orange); }
+        .play-btn-large svg { margin-left: 4px; }
+        
+        /* Hide overlay in fullscreen if playing */
+        .video-container:fullscreen .video-overlay,
+        .video-container:-webkit-full-screen .video-overlay { display: none !important; }
+        
+        .video-bottom-bar {
+            position: absolute; bottom: 20px; left: 20px; right: 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 11; opacity: 0; transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        .video-container:hover .video-bottom-bar { opacity: 1; pointer-events: all; }
+        .video-tool-btn {
+            width: 44px; height: 44px; background: rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: white; cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .video-tool-btn:hover { background: var(--orange); color: black; border-color: var(--orange); transform: scale(1.1); }
+        
+        /* Mobile adjustment */
+        @media (hover: none) {
+            .video-overlay, .video-bottom-bar { opacity: 1; pointer-events: all; }
+            .play-btn-large { width: 60px; height: 60px; }
+        }
+
+        /* PRICING */
+        .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1200px; margin: 0 auto; }
+        .pricing-card { 
+            padding: 40px 32px; 
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 94, 0, 0.15); 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
+        }
+        .pricing-card.featured { 
+            border: 2px solid var(--orange); 
+            background: #050505; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6), 0 0 30px rgba(255, 94, 0, 0.1); 
+        }
+        .pricing-popular {
+            position: absolute; top: 0; right: 40px; background: var(--orange); color: var(--black);
+            font-family: var(--mono); font-size: 10px; font-weight: 700; padding: 6px 16px;
+        }
+        .pricing-premium-badge {
+            position: absolute; top: 0; right: 40px; background: var(--white); color: var(--black);
+            font-family: var(--mono); font-size: 10px; font-weight: 700; padding: 6px 16px;
+            box-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
+        .pricing-price { font-family: var(--display); font-size: 72px; line-height: 1; color: var(--orange); }
+        .pricing-period { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-bottom: 24px; }
+        .pricing-name { font-family: var(--display); font-size: 28px; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid var(--border); font-weight: 700; }
+        .pricing-features { list-style: none; display: flex; flex-direction: column; gap: 14px; margin-bottom: 40px; }
+        .pricing-features li { display: flex; gap: 12px; font-size: 15px; }
+        .pricing-features li::before { content: '→'; color: var(--orange); }
+
+        /* CMS SIDEBAR */
+        .admin-trigger {
+            position: fixed; bottom: 30px; left: 30px; z-index: 9000;
+            width: 44px; height: 44px; border-radius: 50%;
+            background: rgba(15,15,20,0.8); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1); color: var(--light);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.3s ease;
+        }
+        .admin-trigger:hover { background: var(--orange); color: var(--black); border-color: var(--orange); }
+        
+        .admin-sidebar {
+            position: fixed; bottom: 85px; left: 30px; z-index: 8999;
+            background: rgba(15,15,20,0.95); backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;
+            padding: 8px; display: flex; flex-direction: column; gap: 4px;
+            opacity: 0; transform: translateY(10px); pointer-events: none;
+            transition: all 0.3s ease; box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+        .admin-sidebar.active { opacity: 1; transform: translateY(0); pointer-events: all; }
+        
+        .cms-btn-sidebar {
+            background: transparent; border: none; color: var(--white);
+            padding: 10px 20px; border-radius: 8px; font-family: var(--mono);
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; cursor: pointer; white-space: nowrap;
+            display: flex; align-items: center; gap: 10px; transition: all 0.2s;
+        }
+        .cms-btn-sidebar:hover { background: rgba(255,255,255,0.05); color: var(--orange); }
+        
+        .cms-sidebar { transform: translateX(100%); transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        .cms-sidebar.open { transform: translateX(0); }
+        .toast {
+            position: fixed; top: 30px; left: 50%; transform: translateX(-50%);
+            padding: 12px 24px; border-radius: 50px; font-weight: 700; font-size: 12px;
+            text-transform: uppercase; letter-spacing: 1px; z-index: 5000;
+            display: flex; align-items: center; gap: 10px; animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes slideDown { from { transform: translate(-50%, -100%); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+
+        /* REVEAL ANIMATIONS */
+        .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease-out, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 900px) {
+            nav { padding: 16px 24px; } .nav-links { display: none; }
+            #home, section { padding: 80px 24px; }
+            .hero-layout, .about-grid, .system-grid, .work-grid, .testi-grid, .pricing-grid { grid-template-columns: 1fr; }
+            .hero-title { font-size: clamp(56px, 15vw, 100px); }
+            .cms-sidebar { width: 100%; }
+            .premium-card-wrapper { transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="cursor" id="cursor"></div>
+    <div class="cursor-ring" id="cursorRing"></div>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const Icon = ({ name, size = 20, className = "" }) => {
+            const iconRef = React.useRef(null);
+            
+            React.useEffect(() => {
+                const timer = setInterval(() => {
+                    if (window.lucide && iconRef.current) {
+                        window.lucide.createIcons({
+                            targets: [iconRef.current],
+                            attrs: {
+                                'stroke-width': 2,
+                                'width': size,
+                                'height': size
+                            }
+                        });
+                        clearInterval(timer);
+                    }
+                }, 50);
+                return () => clearInterval(timer);
+            }, [name, size]);
+
+            return <i ref={iconRef} data-lucide={name} className={className} style={{ width: size, height: size, display: 'inline-block' }} />;
+        };
+
+        // INITIAL STATE WITH ALL DATA
+        const INITIAL_STATE = {
+            heroTitle1: "I BUILD", heroTitle2: "AI SYSTEMS", heroTitle3: "THAT RECOVER", heroTitle4: "REVENUE",
+            heroSub: "AI Automation + Video Production Expert",
+            heroDesc: "Dental & high-ticket service businesses are losing $300K/year to no-shows and missed calls. I build the AI systems that find it, collect it, and never let it leak again.",
+            aboutBio1: "I'm a Top Rated Upwork AI Automation Expert with 4 years of experience building revenue-recovery systems and premium video assets.",
+            aboutBio2: "Most consultants tell you to see more patients or run more ads. I find the $200K–$500K already sitting in your business — and build the AI that collects it automatically.",
+            skills: ["AI Revenue Recovery Systems", "Lead Generation & AI Automation", "Motion Graphics & Video Editing", "Marketing & Paid Ads", "Personal Branding", "Front Desk Automation"],
+            services: [
+                { id: 1, t: "AI RECEPTIONIST", d: "Answers 100% of inbound calls 24/7. Books and handles inquiries.", r: "→ 100% call answer rate.", i: "phone" },
+                { id: 2, t: "NO-SHOW REDUCTION", d: "3-touch AI reminder sequences. Cut no-shows by 50-70%.", r: "→ Predictive detection.", i: "user-x" },
+                { id: 3, t: "INSURANCE AI", d: "Auto-verifies every patient overnight. Zero manual chasing.", r: "→ Denial rate <5%.", i: "shield-check" },
+                { id: 4, t: "TREATMENT REACTIVATION", d: "Mining PMS for unscheduled treatment. Personal outreach.", r: "→ $150K+ collected.", i: "dollar-sign" },
+                { id: 5, t: "LEAD NURTURE CRM", d: "60-second AI response to every new inquiry.", r: "→ 2-4x conversion.", i: "target" },
+                { id: 6, t: "REPUTATION ENGINE", d: "Post-visit reviews that route happy patients to Google.", r: "→ 4.8+ stars.", i: "star" }
+            ],
+            pricing: [
+                { name: "AI Growth Engine", price: "$499", period: "/ month — starter", features: ["24/7 AI Lead Recovery & Call Answering", "High-Retention Video Assets (3 per month)", "Automated Lead Nurture Sequences", "Google Review Generation System"] },
+                { name: "Revenue Systems", price: "$1.5K", period: "/ month — full system", features: ["Everything in AI Growth Engine", "Full AI Receptionist (100% call coverage)", "No-Show Reduction + Waitlist Automation", "Unscheduled Treatment Reactivation Engine"] },
+                { name: "Growth Operator", price: "$3.5K+", period: "/ month — elite", features: ["Everything in Revenue Systems", "Authority Content Strategy & Personal Branding", "Full Content Creation & Social Distribution", "Inbound Lead Gen through Authority Content", "Monthly Revenue Strategy Consultation"] }
+            ],
+            social: { 
+                email: "romanadnan1039@gmail.com", 
+                linkedin: "https://www.linkedin.com/in/byromaan-230666251/", 
+                upwork: "https://www.upwork.com/freelancers/~01fdb9bd882b8743ca", 
+                whatsapp: "923055973715", 
+                calendly: "https://calendly.com/yourlink" 
+            },
+            demos: [
+                { id: 101, title: "AI Voice Agent", mediaUrl: "", liveUrl: "https://example.com", aspectRatio: "16:9" }
+            ], 
+            testimonials: [
+                { id: 201, client: "Dr. Smith Orthodontics", mediaUrl: "", aspectRatio: "9:16" }
+            ], 
+            aboutProfileUrl: "upwork-profile-card.jpg", 
+            aboutProfileScale: 1.0,
+            brandLogoUrl: "brand-logo.png"
+        };
+
+        const MediaDB = {
+            dbName: "RomaanPortfolioDB_v5", storeName: "media", db: null,
+            async init() {
+                if (this.db) return this.db;
+                return new Promise((resolve, reject) => {
+                    const req = indexedDB.open(this.dbName, 5);
+                    req.onupgradeneeded = (e) => {
+                        const db = e.target.result;
+                        if (!db.objectStoreNames.contains(this.storeName)) db.createObjectStore(this.storeName);
+                    };
+                    req.onsuccess = (e) => { this.db = e.target.result; resolve(this.db); };
+                    req.onerror = (e) => reject(e);
+                });
+            },
+            async save(id, blob) {
+                const db = await this.init();
+                const tx = db.transaction(this.storeName, "readwrite");
+                tx.objectStore(this.storeName).put(blob, id);
+                return new Promise(r => tx.oncomplete = () => r(true));
+            },
+            async get(id) {
+                const db = await this.init();
+                const tx = db.transaction(this.storeName, "readonly");
+                const req = tx.objectStore(this.storeName).get(id);
+                return new Promise(r => req.onsuccess = () => r(req.result));
+            }
+        };
+
+        const VideoCard = ({ d, type }) => {
+            const videoRef = React.useRef(null);
+            const containerRef = React.useRef(null);
+            const [isPlaying, setIsPlaying] = React.useState(false);
+            const [isMuted, setIsMuted] = React.useState(true);
+
+            const togglePlay = () => {
+                if (!videoRef.current) return;
+                if (videoRef.current.paused) {
+                    videoRef.current.play();
+                    setIsPlaying(true);
+                } else {
+                    videoRef.current.pause();
+                    setIsPlaying(false);
+                }
+            };
+
+            const toggleMute = (e) => {
+                e.stopPropagation();
+                if (!videoRef.current) return;
+                videoRef.current.muted = !videoRef.current.muted;
+                setIsMuted(videoRef.current.muted);
+            };
+
+            const toggleFullscreen = (e) => {
+                e.stopPropagation();
+                if (!containerRef.current) return;
+                if (!document.fullscreenElement) {
+                    containerRef.current.requestFullscreen().catch(err => console.warn(err));
+                } else {
+                    document.exitFullscreen();
+                }
+            };
+
+            const isVideo = d.mediaType === 'video' || (d.mediaUrl && d.mediaUrl.includes('.mp4'));
+
+            return (
+                <div className="unified-card reveal">
+                    <div className="card-media">
+                        <div className="media-inner" style={{ cursor: isVideo ? 'pointer' : 'default' }}>
+                            {d.mediaUrl ? (
+                                isVideo ? (
+                                    <div className="video-container" ref={containerRef} onClick={togglePlay}>
+                                        <video 
+                                            ref={videoRef} 
+                                            src={d.mediaUrl} 
+                                            loop 
+                                            muted={isMuted}
+                                            playsInline 
+                                            autoPlay={false}
+                                            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                                        />
+                                        {!isPlaying && (
+                                            <div className="video-overlay" style={{ opacity: 1, pointerEvents: 'all' }}>
+                                                <div className="play-btn-large">
+                                                    <Icon name="play" size={32} />
+                                                </div>
+                                            </div>
+                                        )}
+                                        {isPlaying && (
+                                            <div className="video-overlay">
+                                                <div className="play-btn-large" style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                                    <Icon name="pause" size={32} />
+                                                </div>
+                                            </div>
+                                        )}
+                                        <div className="video-bottom-bar">
+                                            <button className="video-tool-btn" onClick={toggleMute} title={isMuted ? "Unmute" : "Mute"}>
+                                                <Icon name={isMuted ? "volume-x" : "volume-2"} size={20} />
+                                            </button>
+                                            <button className="video-tool-btn" onClick={toggleFullscreen} title="Toggle Fullscreen">
+                                                <Icon name="maximize" size={20} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : <img src={d.mediaUrl} alt={d.title || d.client} />
+                            ) : <div className="w-full h-full flex items-center justify-center text-gray-500">No Media</div>}
+                        </div>
+                    </div>
+                    
+                    <div className="card-content">
+                        <div>
+                            <div className="card-title">{type === 'demo' ? d.title : d.client}</div>
+                            <div className="card-desc">
+                                {type === 'demo' ? "AI Automation system designed to recover revenue and streamline high-ticket service business operations." : "Verified partner result showcasing significant revenue growth and operational efficiency through AI."}
+                            </div>
+                        </div>
+                        
+                        <div style={{display:'flex', alignItems:'center', justifyContent:'space-between'}}>
+                            <a href={d.liveUrl || '#'} className="card-btn" target="_blank" rel="noreferrer">
+                                EXPLORE <Icon name="arrow-up-right" size={14} />
+                            </a>
+                            {type === 'testimonial' && (
+                                <div className="verified-badge-premium">
+                                    <Icon name="check-circle" size={10} style={{ color: 'var(--orange)' }} /> VERIFIED
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const PortfolioApp = () => {
+            const [isEditorOpen, setIsEditorOpen] = useState(false);
+            const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
+            const [activeSection, setActiveSection] = useState('home');
+            const [toast, setToast] = useState(null);
+            const [cmsData, setCmsData] = useState(INITIAL_STATE);
+
+            const showToast = (message, type = "success") => {
+                setToast({ message, type });
+                setTimeout(() => setToast(null), 3000);
+            };
+
+                useEffect(() => {
+                    // Lucide initialization is handled by the Icon component's internal state
+                }, []);
+
+                useEffect(() => {
+                    // CURSOR LOGIC
+                    const cursor = document.getElementById('cursor');
+                    const ring = document.getElementById('cursorRing');
+                    let mx = 0, my = 0, rx = 0, ry = 0;
+                    window.addEventListener('mousemove', e => {
+                        mx = e.clientX; my = e.clientY;
+                        cursor.style.transform = `translate(${mx - 6}px, ${my - 6}px)`;
+                    });
+                    const animateRing = () => {
+                        rx += (mx - rx - 18) * 0.15; ry += (my - ry - 18) * 0.15;
+                        ring.style.transform = `translate(${rx}px, ${ry}px)`;
+                    requestAnimationFrame(animateRing);
+                };
+                animateRing();
+
+                // VIDEO SOUND HANDLING
+                const handleVideos = () => {
+                    document.querySelectorAll('video').forEach(v => {
+                        v.muted = false;
+                        const promise = v.play();
+                        if (promise !== undefined) {
+                            promise.catch(() => {
+                                // Autoplay with sound blocked
+                                v.muted = true;
+                                v.play();
+                            });
+                        }
+                    });
+                };
+                handleVideos();
+                window.addEventListener('click', () => {
+                    document.querySelectorAll('video').forEach(v => v.muted = false);
+                }, { once: true });
+
+                // LOAD CMS DATA SAFELY FROM LOCALSTORAGE
+                const saved = localStorage.getItem("romaan_production_v5");
+                if (saved) {
+                    try {
+                        const parsed = JSON.parse(saved);
+                        // Force merge new pricing packages if they don't exist in local storage
+                        if (parsed.pricing && parsed.pricing.length < INITIAL_STATE.pricing.length) {
+                            parsed.pricing = [
+                                ...parsed.pricing,
+                                ...INITIAL_STATE.pricing.slice(parsed.pricing.length)
+                            ];
+                        }
+                        setCmsData(prev => ({ ...prev, ...parsed }));
+                        (async () => {
+                            const loadMedia = async (id) => { 
+                                if (id) { 
+                                    const b = await MediaDB.get(id); 
+                                    if (b) return { url: URL.createObjectURL(b), type: b.type.startsWith('video/') ? 'video' : 'image' }; 
+                                } 
+                                return null; 
+                            };
+                            const logo = await loadMedia(parsed.brandLogoId);
+                            const profile = await loadMedia(parsed.aboutProfileId);
+                            const updatedDemos = await Promise.all((parsed.demos || []).map(async d => {
+                                const m = await loadMedia(d.mediaId);
+                                return { ...d, mediaUrl: m ? m.url : d.mediaUrl, mediaType: m ? m.type : d.mediaType };
+                            }));
+                            const updatedTests = await Promise.all((parsed.testimonials || []).map(async t => {
+                                const m = await loadMedia(t.mediaId);
+                                return { ...t, mediaUrl: m ? m.url : t.mediaUrl, mediaType: m ? m.type : t.mediaType };
+                            }));
+                            setCmsData(prev => ({ ...prev, brandLogoUrl: logo ? logo.url : prev.brandLogoUrl, aboutProfileUrl: profile ? profile.url : prev.aboutProfileUrl, demos: updatedDemos, testimonials: updatedTests }));
+                        })();
+                    } catch (e) {
+                        console.error("CMS Load Error", e);
+                    }
+                }
+            }, []);
+
+            useEffect(() => {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+                }, { threshold: 0.1 });
+                document.querySelectorAll('.reveal:not(.visible)').forEach(el => observer.observe(el));
+                return () => observer.disconnect();
+            }, [cmsData]);
+
+            const saveToLocal = (newData) => {
+                const meta = { ...newData, brandLogoUrl: null, aboutProfileUrl: null, demos: newData.demos.map(d => ({ ...d, mediaUrl: null })), testimonials: newData.testimonials.map(t => ({ ...t, mediaUrl: null })) };
+                try {
+                    localStorage.setItem("romaan_production_v5", JSON.stringify(meta));
+                } catch(e) { console.warn(e); }
+                setCmsData({...newData});
+            };
+
+            const handleFileUpload = async (type, id, file) => {
+                showToast("Uploading...", "info");
+                try {
+                    const mediaId = `media_${Date.now()}`;
+                    await MediaDB.save(mediaId, file);
+                    const url = URL.createObjectURL(file);
+                    const mediaType = file.type.startsWith('video/') ? 'video' : 'image';
+                    const newData = { ...cmsData };
+                    if (type === 'logo') { newData.brandLogoId = mediaId; newData.brandLogoUrl = url; }
+                    else if (type === 'about') { newData.aboutProfileId = mediaId; newData.aboutProfileUrl = url; }
+                    else if (type === 'demo') { newData.demos = newData.demos.map(d => d.id === id ? { ...d, mediaId, mediaUrl: url, mediaType } : d); }
+                    else if (type === 'testimonial') { newData.testimonials = newData.testimonials.map(t => t.id === id ? { ...t, mediaId, mediaUrl: url, mediaType } : t); }
+                    saveToLocal(newData);
+                    showToast("Upload Successful!");
+                } catch (e) { showToast("Upload Failed", "error"); }
+            };
+
+            const deleteItem = (type, id) => {
+                if (window.confirm("Are you sure you want to delete this item?")) {
+                    const newData = { ...cmsData };
+                    if (type === 'demo') newData.demos = newData.demos.filter(d => d.id !== id);
+                    if (type === 'testimonial') newData.testimonials = newData.testimonials.filter(t => t.id !== id);
+                    saveToLocal(newData);
+                    showToast("Item Removed");
+                }
+            };
+
+            return (
+                <div className="min-h-screen">
+                    {toast && (
+                        <div className={`toast ${toast.type === 'info' ? 'bg-blue-600' : toast.type === 'error' ? 'bg-red-600' : 'bg-accent'} text-white`}>
+                            <Icon name={toast.type === 'info' ? 'refreshCw' : toast.type === 'error' ? 'alertCircle' : 'check'} size={16} />
+                            {toast.message}
+                        </div>
+                    )}
+                    <nav>
+                        <a href="#home" className="nav-logo">BY<span>ROMAAN</span></a>
+                        <ul className="nav-links">
+                            <li><a href="#home">Home</a></li>
+                            <li><a href="#about">About</a></li>
+                            <li><a href="#system">System</a></li>
+                            <li><a href="#work">Work</a></li>
+                            <li><a href="#testimonials">Results</a></li>
+                        </ul>
+                        <a href={cmsData.social.calendly} className="btn-premium nav-cta" target="_blank" rel="noreferrer">Book Call</a>
+                    </nav>
+
+                    <section id="home">
+                        <div className="hero-glow"></div>
+                        <div className="hero-layout">
+                            <div>
+                                <div className="hero-tag">AI Automation × Video Production Expert</div>
+                                <h1 className="hero-title">
+                                    {cmsData.heroTitle1}<br/>
+                                    <span className="orange">{cmsData.heroTitle2}</span><br/>
+                                    <span className="pure-white">{cmsData.heroTitle3}</span><br/>
+                                    <span className="orange">{cmsData.heroTitle4}</span>
+                                </h1>
+                                <p className="hero-sub">{cmsData.heroSub}</p>
+                                <p className="hero-desc">{cmsData.heroDesc}</p>
+                                
+                                <div style={{ display: 'flex', gap: '16px', marginTop: '56px', flexWrap: 'wrap', alignItems: 'center' }}>
+                                    <a href={cmsData.social.calendly} className="btn-premium" target="_blank" rel="noreferrer">Book Strategy Call <Icon name="arrow-right" /></a>
+                                </div>
+                                <div style={{ display: 'flex', gap: '16px', marginTop: '32px', flexWrap: 'wrap' }}>
+                                    <a href={cmsData.social.linkedin} className="btn-social" target="_blank" rel="noreferrer"><Icon name="linkedin" /> LinkedIn</a>
+                                    <a href={cmsData.social.upwork} className="btn-social" target="_blank" rel="noreferrer"><Icon name="external-link" /> Upwork</a>
+                                    <a
+                                    href="https://mail.google.com/mail/?view=cm&fs=1&to=romanadnan1039@gmail.com"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="btn-social"
+                                    >
+                                    Send Email </a>
+                                </div>
+                            </div>
+                            
+                            <div className="premium-card-wrapper reveal">
+                                <div className="premium-card">
+                                    <div className="premium-card-content">
+                                        <img src="brand-logo.png" className="premium-card-logo" alt="Logo" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div className="ticker-wrap">
+                        <div className="ticker-track">
+                            {["AI Lead Recovery", "No-Show Reduction", "Revenue Automation", "Video Production", "Front Desk AI", "Motion Graphics"].map((item, i) => (
+                                <span key={i} className="ticker-item">{item}</span>
+                            ))}
+                            {["AI Lead Recovery", "No-Show Reduction", "Revenue Automation", "Video Production", "Front Desk AI", "Motion Graphics"].map((item, i) => (
+                                <span key={i+'d'} className="ticker-item">{item}</span>
+                            ))}
+                        </div>
+                    </div>
+
+                    <section id="about">
+                        <div className="section-tag">01 Background</div>
+                        <div className="about-grid">
+                            <div className="about-photo-wrap reveal">
+                                {cmsData.aboutProfileUrl ? <img src={cmsData.aboutProfileUrl} className="about-photo" alt="Profile" style={{ transform: `scale(${cmsData.aboutProfileScale || 1})` }} /> : <div className="about-photo" style={{background: 'var(--card)'}}></div>}
+                            </div>
+                            <div className="reveal glass-card" style={{ transitionDelay: '0.15s' }}>
+                                <h2 className="section-title" style={{ fontSize: 'clamp(32px, 4vw, 64px)', marginBottom: '32px' }}>Elite<br/><span className="orange">Systems</span></h2>
+                                <p className="about-desc">{cmsData.aboutBio1}</p>
+                                <p className="about-desc">{cmsData.aboutBio2}</p>
+                                <div className="skills-list">
+                                    {cmsData.skills.map((s, i) => (
+                                        <div key={i} className="skill-row"><div className="skill-dot"></div><span className="skill-name">{s}</span></div>
+                                    ))}
+                                    <div className="section-tag" style={{marginTop: '40px', marginBottom: '24px'}}>Recent Upwork Feedback</div>
+                                    <div className="upwork-review-card">
+                                        <div className="upwork-badge"><Icon name="check-circle" size={10} /> Verified Upwork Review</div>
+                                        <div style={{color: 'var(--white)', fontSize: '15px', marginBottom: '12px', fontStyle: 'italic'}}>"Romaan built an incredible AI system that recovered $45k in unscheduled treatment in just 30 days. Highly professional."</div>
+                                        <div style={{display: 'flex', gap: '4px', color: 'var(--orange)'}}>
+                                            <Icon name="star" size={12} fill="currentColor" />
+                                            <Icon name="star" size={12} fill="currentColor" />
+                                            <Icon name="star" size={12} fill="currentColor" />
+                                            <Icon name="star" size={12} fill="currentColor" />
+                                            <Icon name="star" size={12} fill="currentColor" />
+                                        </div>
+                                    </div>
+                                    <div className="upwork-review-card" style={{animationDelay: '1s'}}>
+                                        <div className="upwork-badge"><Icon name="check-circle" size={10} /> Verified Upwork Review</div>
+                                        <div style={{color: 'var(--white)', fontSize: '15px', marginBottom: '12px', fontStyle: 'italic'}}>"One of the best AI automation experts we've worked with. The video assets he produced were top-tier quality."</div>
+                                        <div style={{display: 'flex', gap: '4px', color: 'var(--orange)'}}>
+                                            <Icon name="star" size={12} fill="currentColor" />
+                                            <Icon name="star" size={12} fill="currentColor" />
+                                            <Icon name="star" size={12} fill="currentColor" />
+                                            <Icon name="star" size={12} fill="currentColor" />
+                                            <Icon name="star" size={12} fill="currentColor" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="system">
+                        <div className="section-tag">02 The System</div>
+                        <h2 className="section-title">SIX<br/><span className="orange">COMPONENTS.</span><br/>ONE OUTCOME.</h2>
+                        <div className="system-grid">
+                            {cmsData.services.map((s, i) => (
+                                <div key={s.id} className="system-card reveal" style={{ transitionDelay: (i % 3) * 0.1 + 's' }}>
+                                    <div className="system-icon">
+                                        <Icon name={s.i} size={24} />
+                                    </div>
+                                    <div className="system-title">{s.t}</div>
+                                    <p className="system-desc">{s.d}</p>
+                                    <div className="system-result">{s.r}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    <section className="offer-section">
+                        <div className="offer-card reveal">
+                            <h2 className="offer-headline">RECOVER <span className="orange">$200K+</span> IN LEAKING REVENUE WITHOUT AN EXTRA DIME ON ADS</h2>
+                            
+                            <div className="offer-grid">
+                                <div className="offer-item">
+                                    <div className="offer-item-icon"><Icon name="bot" size={32} /></div>
+                                    <div className="offer-item-text">
+                                        <h4>AI PATIENT ACQUISITION</h4>
+                                        <p>Our 24/7 AI systems capture every missed call and inquiry instantly, ensuring no patient ever goes to a competitor.</p>
+                                    </div>
+                                </div>
+                                <div className="offer-item">
+                                    <div className="offer-item-icon"><Icon name="Zap" size={32} /></div>
+                                    <div className="offer-item-text">
+                                        <h4>DONE-FOR-YOU SYSTEMS</h4>
+                                        <p>Zero tech stress. we handle the full implementation of your revenue-recovery engine from day one.</p>
+                                    </div>
+                                </div>
+                                <div className="offer-item">
+                                    <div className="offer-item-icon"><Icon name="calendar-check" size={32} /></div>
+                                    <div className="offer-item-text">
+                                        <h4>AUTOMATED BOOKING</h4>
+                                        <p>Eliminate front-desk friction with AI that qualifies leads and books appointments directly into your PMS.</p>
+                                    </div>
+                                </div>
+                                <div className="offer-item">
+                                    <div className="offer-item-icon"><Icon name="shield-check" size={32} /></div>
+                                    <div className="offer-item-text">
+                                        <h4>RISK-FREE SETUP</h4>
+                                        <p>We handle everything from system architecture to deployment. You just focus on treating patients.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="offer-outcome">
+                                <h5>Transformation Outcome</h5>
+                                <div className="offer-outcome-list">
+                                    <div className="outcome-stat"><span>+</span>30% Patients</div>
+                                    <div className="outcome-stat"><span>-</span>70% No-Shows</div>
+                                    <div className="outcome-stat"><span>24/7</span> Coverage</div>
+                                </div>
+                            </div>
+
+                            <div style={{ display: 'flex', gap: '24px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                                <a href={cmsData.social.calendly} className="btn-premium" style={{ padding: '20px 48px', fontSize: '14px' }}>
+                                    Book Strategy Call <Icon name="arrow-right" />
+                                </a>
+                                <a href="#work" className="btn-social" style={{ padding: '20px 48px', fontSize: '14px' }}>
+                                    See Live Demo
+                                </a>
+                            </div>
+                            
+                            <p style={{ marginTop: '32px', color: 'var(--muted)', fontFamily: 'var(--mono)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                                * Full System Deployment Included. Zero Friction.
+                            </p>
+                        </div>
+                    </section>
+
+                    <section id="work">
+                        <div className="section-tag">03 Portfolio</div>
+                        <h2 className="section-title">Selected<br/><span className="orange">Work</span></h2>
+                        <div className="work-grid">
+                            {cmsData.demos.length === 0 ? <p style={{color: 'var(--muted)', fontFamily: 'var(--mono)'}}>// Add projects via CMS</p> : cmsData.demos.map(d => (
+                                <VideoCard key={d.id} d={d} type="demo" />
+                            ))}
+                        </div>
+                    </section>
+
+                    <section id="testimonials">
+                        <div className="section-tag">04 Client Results</div>
+                        <h2 className="section-title">RESULTS<br/><span className="orange">SPEAK</span></h2>
+                        <div className="testi-grid">
+                            {cmsData.testimonials.length === 0 ? <p style={{color: 'var(--muted)', fontFamily: 'var(--mono)'}}>// Add testimonials via CMS</p> : cmsData.testimonials.map(t => (
+                                <VideoCard key={t.id} d={t} type="testimonial" />
+                            ))}
+                        </div>
+                    </section>
+
+                    <section id="pricing">
+                        <div className="section-tag">05 Services</div>
+                        <h2 className="section-title">ROI-FIRST<br/><span className="orange">PACKAGES</span></h2>
+                        <div className="pricing-grid reveal">
+                            {cmsData.pricing.map((p, i) => (
+                                <div key={i} className={`pricing-card ${i === 1 ? 'featured' : ''}`}>
+                                    {/* RESTORED BADGES */}
+                                    {i === 1 && <div className="pricing-popular">Most Popular</div>}
+                                    {i === 2 && <div className="pricing-premium-badge">Elite Choice</div>}
+                                    <div className="pricing-price">{p.price}</div>
+                                    <div className="pricing-period">{p.period}</div>
+                                    <div className="pricing-name">{p.name}</div>
+                                    <ul className="pricing-features">
+                                        {p.features.map((f, j) => <li key={j}>{f}</li>)}
+                                    </ul>
+                                    {/* RESTORED GET STARTED BUTTONS */}
+                                    <a href={cmsData.social.calendly} className={i === 1 ? 'btn-premium' : 'btn-social'} style={{width: '100%', justifyContent: 'center', marginTop: '24px'}} target="_blank" rel="noreferrer">
+                                        Get Started <Icon name="arrow-right" size={14}/>
+                                    </a>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    <section id="contact" style={{textAlign: 'center'}}>
+                        <div className="section-tag" style={{justifyContent: 'center'}}>// Let's Build</div>
+                        <h1 className="section-title">LET'S<br/><span className="orange">SCALE</span><br/>TOGETHER.</h1>
+                        <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '40px' }}>
+                            <a href={cmsData.social.calendly} className="btn-premium" target="_blank" rel="noreferrer">Book Strategy Call <Icon name="arrow-right" /></a>
+                        </div>
+                        <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                            <a href={cmsData.social.linkedin} className="btn-social" target="_blank" rel="noreferrer"><Icon name="linkedin" /> LinkedIn</a>
+                            <a href={cmsData.social.upwork} className="btn-social" target="_blank" rel="noreferrer"><Icon name="external-link" /> Upwork</a>
+                            <a
+                            href="https://mail.google.com/mail/?view=cm&fs=1&to=romanadnan1039@gmail.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn-social"
+                            >
+                            Send Email </a>
+                        </div>
+                    </section>
+
+                    {/* RESTORED WHATSAPP BUTTON */}
+                    <a href={`https://wa.me/${cmsData.social.whatsapp}`} className="wa-float" target="_blank" rel="noreferrer">
+                        <Icon name="message-circle" size={18} /> WhatsApp
+                    </a>
+
+                    {/* ADMIN TRIGGER & SIDEBAR MENU */}
+                    <div className="admin-controls">
+                        <button className="admin-trigger" onClick={() => setIsAdminMenuOpen(!isAdminMenuOpen)}>
+                            <Icon name="more-vertical" size={20} />
+                        </button>
+                        <div className={`admin-sidebar ${isAdminMenuOpen ? 'active' : ''}`}>
+                            <button className="cms-btn-sidebar" onClick={() => { setIsEditorOpen(true); setIsAdminMenuOpen(false); }}>
+                                <Icon name="edit-3" size={14} /> EDIT CMS
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* CMS SIDEBAR - INTEGRATED STYLING FROM USER'S REQUEST */}
+                    <div className={`fixed inset-y-0 right-0 w-full md:w-[500px] glass z-[4000] p-12 overflow-y-auto border-l border-white/10 cms-sidebar ${isEditorOpen ? 'open' : ''}`} style={{background: 'rgba(10,10,13,0.95)', backdropFilter: 'blur(30px)'}}>
+                        <div className="flex justify-between items-center mb-16 pb-6 border-b border-white/10">
+                            <h2 className="font-bebas text-5xl text-accent italic uppercase tracking-widest" style={{margin:0}}>Portfolio Engine</h2>
+                            <button onClick={() => setIsEditorOpen(false)} className="text-white hover:text-accent" style={{background:'none', border:'none', cursor:'pointer'}}><Icon name="x" size={36} /></button>
+                        </div>
+                        <div className="space-y-16">
+                            <section className="space-y-8" style={{margin:0, padding:0, border:'none'}}>
+                                <h3 className="text-[11px] font-bold uppercase tracking-[5px] text-gray-500 flex items-center gap-4"><Icon name="link" size={14} /> Social Links</h3>
+                                <div className="space-y-4 flex flex-col gap-4">
+                                    <input type="text" value={cmsData.social.linkedin} onChange={e => saveToLocal({...cmsData, social: {...cmsData.social, linkedin: e.target.value}})} className="w-full bg-bg3 border border-white/5 rounded-xl p-3 text-[10px] outline-none focus:border-accent" placeholder="LinkedIn URL" />
+                                    <input type="text" value={cmsData.social.upwork} onChange={e => saveToLocal({...cmsData, social: {...cmsData.social, upwork: e.target.value}})} className="w-full bg-bg3 border border-white/5 rounded-xl p-3 text-[10px] outline-none focus:border-accent" placeholder="Upwork URL" />
+                                    <input type="text" value={cmsData.social.whatsapp} onChange={e => saveToLocal({...cmsData, social: {...cmsData.social, whatsapp: e.target.value}})} className="w-full bg-bg3 border border-white/5 rounded-xl p-3 text-[10px] outline-none focus:border-accent" placeholder="WhatsApp Number (e.g. 92305...)" />
+                                    <input type="text" value={cmsData.social.calendly} onChange={e => saveToLocal({...cmsData, social: {...cmsData.social, calendly: e.target.value}})} className="w-full bg-bg3 border border-white/5 rounded-xl p-3 text-[10px] outline-none focus:border-accent" placeholder="Calendly URL" />
+                                </div>
+                            </section>
+
+                            <section className="space-y-8" style={{margin:0, padding:0, border:'none'}}>
+                                <h3 className="text-[11px] font-bold uppercase tracking-[5px] text-gray-500 flex items-center gap-4"><Icon name="image" size={14} /> Brand Identity</h3>
+                                <button onClick={() => {
+                                    const i = document.createElement('input'); i.type='file'; i.accept='image/*';
+                                    i.onchange = e => e.target.files[0] && handleFileUpload('logo', null, e.target.files[0]); i.click();
+                                }} className="w-full bg-white text-black py-5 rounded-3xl font-black text-[10px] uppercase shadow-xl hover:bg-accent transition-all" style={{border:'none', cursor:'pointer'}}>Upload Brand Logo</button>
+                            </section>
+
+                            <section className="space-y-8" style={{margin:0, padding:0, border:'none'}}>
+                                <h3 className="text-[11px] font-bold uppercase tracking-[5px] text-gray-500 flex items-center gap-4"><Icon name="user" size={14} /> About Identity</h3>
+                                <div className="flex flex-col gap-4">
+                                    <textarea value={cmsData.aboutBio1} onChange={e => saveToLocal({...cmsData, aboutBio1: e.target.value})} className="w-full bg-bg3 border border-white/5 rounded-3xl p-8 text-xs outline-none focus:border-accent leading-relaxed" rows="3" placeholder="Bio Line 1" />
+                                    <textarea value={cmsData.aboutBio2} onChange={e => saveToLocal({...cmsData, aboutBio2: e.target.value})} className="w-full bg-bg3 border border-white/5 rounded-3xl p-8 text-xs outline-none focus:border-accent leading-relaxed" rows="3" placeholder="Bio Line 2" />
+                                    <div className="p-6 bg-white/5 rounded-3xl border border-white/5">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-4">Profile Photo Zoom</label>
+                                        <input 
+                                            type="range" 
+                                            min="0.8" 
+                                            max="2.5" 
+                                            step="0.05" 
+                                            value={cmsData.aboutProfileScale || 1} 
+                                            onChange={e => saveToLocal({...cmsData, aboutProfileScale: parseFloat(e.target.value)})} 
+                                            className="w-full accent-accent" 
+                                        />
+                                        <div className="flex justify-between text-[8px] text-gray-500 mt-2 font-mono">
+                                            <span>MIN</span>
+                                            <span>{(cmsData.aboutProfileScale || 1).toFixed(2)}x</span>
+                                            <span>MAX</span>
+                                        </div>
+                                    </div>
+                                    <button onClick={() => {
+                                        const i = document.createElement('input'); i.type='file'; i.accept='image/*';
+                                        i.onchange = e => e.target.files[0] && handleFileUpload('about', null, e.target.files[0]); i.click();
+                                    }} className="w-full bg-accent text-black py-5 rounded-3xl font-black text-[10px] uppercase shadow-xl hover:bg-white transition-all" style={{border:'none', cursor:'pointer'}}>Update Profile Photo</button>
+                                </div>
+                            </section>
+
+                            <section className="space-y-8" style={{margin:0, padding:0, border:'none'}}>
+                                <h3 className="text-[11px] font-bold uppercase tracking-[5px] text-gray-500 flex items-center gap-4"><Icon name="type" size={14} /> Hero Text</h3>
+                                <div className="flex flex-col gap-4">
+                                    <input type="text" value={cmsData.heroTitle1} onChange={e => saveToLocal({...cmsData, heroTitle1: e.target.value})} className="w-full bg-bg3 border border-white/5 rounded-xl p-3 text-[10px] outline-none focus:border-accent" placeholder="Title Line 1" />
+                                    <input type="text" value={cmsData.heroTitle2} onChange={e => saveToLocal({...cmsData, heroTitle2: e.target.value})} className="w-full bg-bg3 border border-white/5 rounded-xl p-3 text-[10px] outline-none focus:border-accent" placeholder="Title Line 2" />
+                                    <input type="text" value={cmsData.heroTitle3} onChange={e => saveToLocal({...cmsData, heroTitle3: e.target.value})} className="w-full bg-bg3 border border-white/5 rounded-xl p-3 text-[10px] outline-none focus:border-accent" placeholder="Title Line 3" />
+                                    <input type="text" value={cmsData.heroTitle4} onChange={e => saveToLocal({...cmsData, heroTitle4: e.target.value})} className="w-full bg-bg3 border border-white/5 rounded-xl p-3 text-[10px] outline-none focus:border-accent" placeholder="Title Line 4" />
+                                    <input type="text" value={cmsData.heroSub} onChange={e => saveToLocal({...cmsData, heroSub: e.target.value})} className="w-full bg-bg3 border border-white/5 rounded-xl p-3 text-[10px] outline-none focus:border-accent" placeholder="Hero Subtitle" />
+                                    <textarea value={cmsData.heroDesc} onChange={e => saveToLocal({...cmsData, heroDesc: e.target.value})} className="w-full bg-bg3 border border-white/5 rounded-xl p-3 text-[10px] outline-none focus:border-accent" rows="3" placeholder="Hero Description" />
+                                </div>
+                            </section>
+
+                            <section className="space-y-12" style={{margin:0, padding:0, border:'none'}}>
+                                <div className="flex justify-between items-center bg-white/5 p-6 rounded-3xl border border-white/5">
+                                    <h3 className="text-[11px] font-bold uppercase tracking-[5px] text-gray-500 flex items-center gap-4"><Icon name="play" size={14} /> Live Demos</h3>
+                                    <button onClick={() => saveToLocal({...cmsData, demos: [...cmsData.demos, { id: Date.now(), title: "New Project", description: "Desc", aspectRatio: "16:9", liveUrl: "" }]})} className="bg-accent text-black px-6 py-3 rounded-full text-[9px] font-black uppercase tracking-widest hover:bg-white transition-all shadow-lg" style={{border:'none', cursor:'pointer'}}>+ Add New</button>
+                                </div>
+                                <div className="space-y-10 flex flex-col gap-10">
+                                    {cmsData.demos.map((d, i) => (
+                                        <div key={d.id} className="p-8 bg-white/5 rounded-[40px] border border-white/5 space-y-6 relative group" style={{display:'flex', flexDirection:'column', gap:'1.5rem'}}>
+                                            <div className="absolute top-6 right-6 flex gap-2">
+                                                <button onClick={() => deleteItem('demo', d.id)} className="w-10 h-10 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-full flex items-center justify-center transition-all border border-red-500/20" style={{border:'none', cursor:'pointer'}}><Icon name="trash2" size={16} /></button>
+                                            </div>
+                                            <input type="text" value={d.title} onChange={e => { const c = [...cmsData.demos]; c[i].title = e.target.value; saveToLocal({...cmsData, demos: c}); }} className="w-full bg-transparent border-b border-white/10 pb-2 text-sm outline-none font-bold focus:border-accent" placeholder="Project Title" style={{background:'transparent', color:'white', border:'none', borderBottom:'1px solid rgba(255,255,255,0.1)'}} />
+                                            <input type="text" value={d.liveUrl} onChange={e => { const c = [...cmsData.demos]; c[i].liveUrl = e.target.value; saveToLocal({...cmsData, demos: c}); }} className="w-full bg-bg3 border border-white/5 rounded-xl p-3 text-[10px] outline-none" placeholder="Live Demo URL" style={{background:'var(--bg3)', color:'white', border:'1px solid rgba(255,255,255,0.05)', borderRadius:'0.5rem', padding:'0.75rem'}} />
+                                            <div className="grid grid-cols-2 gap-4" style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'1rem'}}>
+                                                <button onClick={() => {
+                                                    const iEl = document.createElement('input'); iEl.type='file'; iEl.accept='video/*,image/*';
+                                                    iEl.onchange = e => e.target.files[0] && handleFileUpload('demo', d.id, e.target.files[0]); iEl.click();
+                                                }} className="bg-bg3 border border-white/5 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-white" style={{cursor:'pointer', border:'1px solid rgba(255,255,255,0.05)', borderRadius:'0.5rem'}}>Upload Media</button>
+                                                <select value={d.aspectRatio} onChange={e => { const c = [...cmsData.demos]; c[i].aspectRatio = e.target.value; saveToLocal({...cmsData, demos: c}); }} className="bg-bg3 border border-white/5 px-3 rounded-xl text-[9px] font-bold uppercase outline-none text-white" style={{border:'1px solid rgba(255,255,255,0.05)', borderRadius:'0.5rem'}}>
+                                                    <option value="16:9">16:9 (Landscape)</option>
+                                                    <option value="9:16">9:16 (Portrait)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </section>
+
+                            <section className="space-y-12" style={{margin:0, padding:0, border:'none'}}>
+                                <div className="flex justify-between items-center bg-white/5 p-6 rounded-3xl border border-white/5">
+                                    <h3 className="text-[11px] font-bold uppercase tracking-[5px] text-gray-500 flex items-center gap-4"><Icon name="award" size={14} /> Testimonials</h3>
+                                    <button onClick={() => saveToLocal({...cmsData, testimonials: [...cmsData.testimonials, { id: Date.now(), client: "New Client", resultTitle: "New Result", text: "Quote", aspectRatio: "9:16" }]})} className="bg-accent text-black px-6 py-3 rounded-full text-[9px] font-black uppercase tracking-widest hover:bg-white transition-all shadow-lg" style={{border:'none', cursor:'pointer'}}>+ Add New</button>
+                                </div>
+                                <div className="space-y-10 flex flex-col gap-10">
+                                    {cmsData.testimonials.map((t, i) => (
+                                        <div key={t.id} className="p-8 bg-white/5 rounded-[40px] border border-white/5 space-y-6 relative group" style={{display:'flex', flexDirection:'column', gap:'1.5rem'}}>
+                                            <div className="absolute top-6 right-6 flex gap-2">
+                                                <button onClick={() => deleteItem('testimonial', t.id)} className="w-10 h-10 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-full flex items-center justify-center transition-all border border-red-500/20" style={{border:'none', cursor:'pointer'}}><Icon name="trash2" size={16} /></button>
+                                            </div>
+                                            <input type="text" value={t.client} onChange={e => { const c = [...cmsData.testimonials]; c[i].client = e.target.value; saveToLocal({...cmsData, testimonials: c}); }} className="w-full bg-transparent border-b border-white/10 pb-2 text-sm outline-none font-bold focus:border-accent" placeholder="Client Name" style={{background:'transparent', color:'white', border:'none', borderBottom:'1px solid rgba(255,255,255,0.1)'}} />
+                                            <div className="grid grid-cols-2 gap-4" style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'1rem'}}>
+                                                <button onClick={() => {
+                                                    const iEl = document.createElement('input'); iEl.type='file'; iEl.accept='video/*,image/*';
+                                                    iEl.onchange = e => e.target.files[0] && handleFileUpload('testimonial', t.id, e.target.files[0]); iEl.click();
+                                                }} className="bg-bg3 border border-white/5 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-white" style={{cursor:'pointer', border:'1px solid rgba(255,255,255,0.05)', borderRadius:'0.5rem'}}>Upload Media</button>
+                                                <select value={t.aspectRatio} onChange={e => { const c = [...cmsData.testimonials]; c[i].aspectRatio = e.target.value; saveToLocal({...cmsData, testimonials: c}); }} className="bg-bg3 border border-white/5 px-3 rounded-xl text-[9px] font-bold uppercase outline-none text-white" style={{border:'1px solid rgba(255,255,255,0.05)', borderRadius:'0.5rem'}}>
+                                                    <option value="9:16">9:16 (Portrait)</option>
+                                                    <option value="16:9">16:9 (Landscape)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </section>
+
+                            <section className="space-y-12" style={{margin:0, padding:0, border:'none'}}>
+                                <h3 className="text-[11px] font-bold uppercase tracking-[5px] text-gray-500 flex items-center gap-4"><Icon name="grid" size={14} /> Services Components</h3>
+                                {cmsData.services.map((s, i) => (
+                                    <div key={s.id} className="p-8 bg-white/5 rounded-3xl border border-white/5 flex flex-col gap-4">
+                                        <input value={s.t} onChange={e => { const n = [...cmsData.services]; n[i].t = e.target.value; saveToLocal({...cmsData, services: n}); }} placeholder="Title" className="w-full bg-bg3 border border-white/5 rounded-xl p-3 text-[10px] outline-none focus:border-accent text-white" />
+                                        <textarea value={s.d} onChange={e => { const n = [...cmsData.services]; n[i].d = e.target.value; saveToLocal({...cmsData, services: n}); }} placeholder="Description" rows="2" className="w-full bg-bg3 border border-white/5 rounded-xl p-3 text-[10px] outline-none focus:border-accent text-white" />
+                                        <input value={s.r} onChange={e => { const n = [...cmsData.services]; n[i].r = e.target.value; saveToLocal({...cmsData, services: n}); }} placeholder="Result text" className="w-full bg-bg3 border border-white/5 rounded-xl p-3 text-[10px] outline-none focus:border-accent text-white" />
+                                        <input value={s.i} onChange={e => { const n = [...cmsData.services]; n[i].i = e.target.value; saveToLocal({...cmsData, services: n}); }} placeholder="Lucide Icon Name (e.g. phone, star)" className="w-full bg-bg3 border border-white/5 rounded-xl p-3 text-[10px] outline-none focus:border-accent text-white" />
+                                    </div>
+                                ))}
+                            </section>
+
+                            <section className="space-y-12" style={{margin:0, padding:0, border:'none'}}>
+                                <h3 className="text-[11px] font-bold uppercase tracking-[5px] text-gray-500 flex items-center gap-4"><Icon name="dollarSign" size={14} /> Pricing Packages</h3>
+                                {cmsData.pricing.map((p, i) => (
+                                    <div key={i} className="p-8 bg-white/5 rounded-3xl border border-white/5 flex flex-col gap-4">
+                                        <input value={p.name} onChange={e => { const n = [...cmsData.pricing]; n[i].name = e.target.value; saveToLocal({...cmsData, pricing: n}); }} placeholder="Package Name" className="w-full bg-bg3 border border-white/5 rounded-xl p-3 text-[10px] outline-none focus:border-accent text-white" />
+                                        <input value={p.price} onChange={e => { const n = [...cmsData.pricing]; n[i].price = e.target.value; saveToLocal({...cmsData, pricing: n}); }} placeholder="Price" className="w-full bg-bg3 border border-white/5 rounded-xl p-3 text-[10px] outline-none focus:border-accent text-white" />
+                                        <input value={p.period} onChange={e => { const n = [...cmsData.pricing]; n[i].period = e.target.value; saveToLocal({...cmsData, pricing: n}); }} placeholder="Period (e.g., / month)" className="w-full bg-bg3 border border-white/5 rounded-xl p-3 text-[10px] outline-none focus:border-accent text-white" />
+                                        <textarea value={p.features.join('\n')} onChange={e => { const n = [...cmsData.pricing]; n[i].features = e.target.value.split('\n'); saveToLocal({...cmsData, pricing: n}); }} placeholder="Features (one per line)" rows="4" className="w-full bg-bg3 border border-white/5 rounded-xl p-3 text-[10px] outline-none focus:border-accent text-white" />
+                                    </div>
+                                ))}
+                            </section>
+
+                            <button onClick={() => { localStorage.setItem("romaan_production_v5", JSON.stringify(cmsData)); setIsEditorOpen(false); alert("Production System Published!"); }} className="w-full bg-white text-black py-8 rounded-full font-black uppercase text-xs tracking-widest hover:bg-accent transition-all shadow-2xl" style={{border:'none', cursor:'pointer', marginTop:'20px'}}>Publish & Secure</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<PortfolioApp />);
+    </script>
+</body>
+</html>

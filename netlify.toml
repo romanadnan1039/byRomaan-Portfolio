@@ -1,0 +1,21 @@
+plugins = []
+headers = []
+redirects = []
+
+[dev]
+command = "npm run dev"
+targetPort = 3000
+port = 8888
+
+[functions]
+
+  [functions."*"]
+
+[build]
+  publish = "portfolio"
+  command = ""
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
